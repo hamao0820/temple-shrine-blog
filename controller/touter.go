@@ -7,5 +7,6 @@ func GetRouter() *gin.Engine {
 	r.LoadHTMLGlob("view/*.html")
 	r.Static("images", "./images")
 	r.GET("/", Index)
+	r.GET("/blog/:id", ShowBlog)
 	return r
 }

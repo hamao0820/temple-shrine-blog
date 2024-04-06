@@ -13,7 +13,9 @@ type Blog struct {
 	CreatedAt string   `json:"created_at"`
 }
 
-func GetAll() []Blog {
+var db map[string]interface{}
+
+func init() {
 	blogs := []Blog{
 		{
 			ID:        "1",
@@ -32,5 +34,31 @@ func GetAll() []Blog {
 			CreatedAt: time.Now().Format("2006-01-02"),
 		},
 	}
+	db = make(map[string]interface{})
+	db["blogs"] = blogs
+}
+
+func GetAll() []Blog {
+	blogs, ok := db["blogs"].([]Blog)
+	if !ok {
+		return []Blog{
+			{
+				Title: "No blog found",
+			},
+		}
+	}
 	return blogs
+}
+
+func GetByID(id string) Blog {
+	blogs, ok := db["blogs"].([]Blog)
+	if !ok {
+		return Blog{}
+	}
+	for _, blog := range blogs {
+		if blog.ID == id {
+			return blog
+		}
+	}
+	return Blog{}
 }

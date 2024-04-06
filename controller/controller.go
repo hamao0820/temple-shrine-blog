@@ -13,3 +13,11 @@ func Index(c *gin.Context) {
 		"blogs": blogs,
 	})
 }
+
+func ShowBlog(c *gin.Context) {
+	id := c.Param("id")
+	blog := model.GetByID(id)
+	c.HTML(http.StatusOK, "blog.html", gin.H{
+		"blog": blog,
+	})
+}
