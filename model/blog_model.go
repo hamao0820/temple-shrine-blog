@@ -43,9 +43,9 @@ func GetAll() (datas []Blog) {
 	return datas
 }
 
-func GetOne(id int) (data Blog) {
+func GetOne(id string) (data Blog) {
 	db := openDB()
-	result := db.First(&data, id)
+	result := db.Model(&Blog{}).Preload("ImageURLs").First(&data, id)
 	if result.Error != nil {
 		panic(result.Error)
 	}

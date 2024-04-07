@@ -29,14 +29,17 @@ func Index(c *gin.Context) {
 }
 
 func ShowBlog(c *gin.Context) {
-	// id, err := strconv.Atoi(c.Param("id"))
-	// if err != nil {
-	// 	c.JSON(http.StatusBadRequest, gin.H{"message": "invalid id"})
-	// 	return
-	// }
-	// blog := model.GetOne(id)
+	id := c.Param("id")
+	blog := model.GetOne(id)
+	showBlog := map[string]any{
+		"createdAt": blog.CreatedAt.Format("2006-01-02 15:04:05"),
+		"name":      blog.Name,
+		"body":      blog.Body,
+		"images":    blog.ImageURLs,
+		"id":        blog.ID,
+	}
 	c.HTML(http.StatusOK, "blog.html", gin.H{
-		// "blog":       blog,
+		"blog":       showBlog,
 		"authorized": Authorized(c),
 	})
 }
