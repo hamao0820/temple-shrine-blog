@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -68,39 +67,37 @@ func generateToken(userID string) (string, error) {
 }
 
 func middleware(c *gin.Context) {
-	session := sessions.Default(c)
-	token_ := session.Get("token")
-	if token_ == nil {
+	if !Authorized(c) {
 		c.Redirect(http.StatusFound, "/need_to_login")
 		c.Abort()
 		return
-	}
-	tokenStr, ok := token_.(string)
-	if !ok {
-		c.Redirect(http.StatusFound, "/need_to_login")
-		c.Abort()
-		return
-	}
-	if tokenStr == "" {
-		c.Redirect(http.StatusFound, "/need_to_login")
-		c.Abort()
-		return
-	}
-	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
-		return []byte(SECRET_KEY), nil
-	})
-	if err != nil {
-		c.Redirect(http.StatusFound, "/need_to_login")
-		c.Abort()
-		return
-	}
-	if _, ok := token.Claims.(jwt.MapClaims); !ok || !token.Valid {
-		c.JSON(403, gin.H{"message": "need to login"})
-		c.Abort()
 	}
 
 	c.Next()
+}
+
+func Authorized(c *gin.Context) bool {
+	session := sessions.Default(c)
+	token_ := session.Get("token")
+	if token_ == nil {
+		return false
+	}
+	tokenStr, ok := token_.(string)
+	if !ok {
+		return false
+	}
+	if tokenStr == "" {
+		return false
+	}
+	token, err := jwt.Parse(tokenStr, func(token *jwt.Token) (interface{}, error) {
+		return []byte(SECRET_KEY), nil
+	})
+	if err != nil {
+		return false
+	}
+	if _, ok := token.Claims.(jwt.MapClaims); !ok || !token.Valid {
+		return false
+	}
+
+	return true
 }
