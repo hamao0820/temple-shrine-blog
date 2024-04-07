@@ -21,3 +21,7 @@ func ShowBlog(c *gin.Context) {
 		"blog": blog,
 	})
 }
+
+func ShowLogin(c *gin.Context) {
+	c.HTML(http.StatusOK, "login.html", gin.H{})
+}
