@@ -11,9 +11,19 @@ import (
 )
 
 func Index(c *gin.Context) {
-	// blogs := model.GetAll()
+	blogs := model.GetAll()
+	var showBlogs []map[string]any
+	for _, b := range blogs {
+		showblog := map[string]any{
+			"thumbnail": b.ImageURLs[0].URL,
+			"createdAt": b.CreatedAt.Format("2006-01-02 15:04:05"),
+			"name":      b.Name,
+			"id":        b.ID,
+		}
+		showBlogs = append(showBlogs, showblog)
+	}
 	c.HTML(http.StatusOK, "index.html", gin.H{
-		// "blogs":      blogs,
+		"blogs":      showBlogs,
 		"authorized": Authorized(c),
 	})
 }

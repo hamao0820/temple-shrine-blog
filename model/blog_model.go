@@ -11,7 +11,7 @@ type Blog struct {
 	gorm.Model
 	Name      string
 	Body      string
-	ImageURLs []ImageURL `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	ImageURLs []ImageURL `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL,foreignkey:OrganizationID;"`
 }
 
 type ImageURL struct {
@@ -23,8 +23,7 @@ type ImageURL struct {
 func init() {
 	db := openDB()
 
-	db.AutoMigrate(&Blog{})
-	db.AutoMigrate(&ImageURL{})
+	db.AutoMigrate(&Blog{}, &ImageURL{})
 }
 
 func openDB() *gorm.DB {
@@ -35,21 +34,23 @@ func openDB() *gorm.DB {
 	return db
 }
 
-// func GetAll() (datas []Blog) {
-// 	res := db.Find(&datas)
-// 	if res.Error != nil {
-// 		return
-// 	}
-// 	return datas
-// }
+func GetAll() (datas []Blog) {
+	db := openDB()
+	res := db.Model(&Blog{}).Preload("ImageURLs").Find(&datas).Order("created_at desc")
+	if res.Error != nil {
+		return
+	}
+	return datas
+}
 
-// func GetOne(id int) (data Blog) {
-// 	result := db.First(&data, id)
-// 	if result.Error != nil {
-// 		panic(result.Error)
-// 	}
-// 	return data
-// }
+func GetOne(id int) (data Blog) {
+	db := openDB()
+	result := db.First(&data, id)
+	if result.Error != nil {
+		panic(result.Error)
+	}
+	return data
+}
 
 func (b *Blog) Create() {
 	db := openDB()
