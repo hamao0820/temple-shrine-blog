@@ -8,9 +8,19 @@
   <body>
     <h1>登録</h1>
     <form action="/create" method="post" enctype="multipart/form-data">
-      <input type="file" name="image" accept="image/*" />
-      <input type="text" />
-      <input type="submit" value="登録" />
+      <label for="name">名前</label>
+      <input type="text" name="name" id="name" />
+      <label for="image_data">画像</label>
+      <input
+        type="file"
+        name="image_data"
+        multiple="multiple"
+        accept="image/*"
+        id="image_data"
+      />
+      <label for="description">説明</label>
+      <input type="text" id="description" name="description" />
+      <button type="submit">登録</button>
     </form>
   </body>
 </html>
