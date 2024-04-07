@@ -34,6 +34,6 @@ func ShowCreate(c *gin.Context) {
 	c.HTML(http.StatusOK, "create.html", gin.H{})
 }
 
-func NeedToLogin(c *gin.Context) {
+func ShowNeedToLogin(c *gin.Context) {
 	c.HTML(http.StatusUnauthorized, "need_to_login.html", gin.H{})
 }

@@ -16,7 +16,7 @@ func GetRouter() *gin.Engine {
 	r.GET("/login", ShowLogin)
 	r.POST("/login", Login)
 	r.GET("/create", middleware, ShowCreate)
-	r.GET("/need_to_login", NeedToLogin)
+	r.GET("/need_to_login", ShowNeedToLogin)
 
 	return r
 }
