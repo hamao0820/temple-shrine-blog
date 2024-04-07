@@ -11,18 +11,22 @@ import (
 )
 
 func Index(c *gin.Context) {
-	blogs := model.GetAll()
+	// blogs := model.GetAll()
 	c.HTML(http.StatusOK, "index.html", gin.H{
-		"blogs":      blogs,
+		// "blogs":      blogs,
 		"authorized": Authorized(c),
 	})
 }
 
 func ShowBlog(c *gin.Context) {
-	id := c.Param("id")
-	blog := model.GetByID(id)
+	// id, err := strconv.Atoi(c.Param("id"))
+	// if err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"message": "invalid id"})
+	// 	return
+	// }
+	// blog := model.GetOne(id)
 	c.HTML(http.StatusOK, "blog.html", gin.H{
-		"blog":       blog,
+		// "blog":       blog,
 		"authorized": Authorized(c),
 	})
 }
@@ -42,15 +46,16 @@ func ShowNeedToLogin(c *gin.Context) {
 }
 
 func Create(c *gin.Context) {
+	blog := &model.Blog{
+		Name: c.PostForm("name"),
+		Body: c.PostForm("body"),
+	}
+	fmt.Println(blog)
 	form, err := c.MultipartForm()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "server error"})
 		return
 	}
-	name := c.PostForm("name")
-	fmt.Println(name)
-	description := c.PostForm("description")
-	fmt.Println(description)
 
 	files := form.File["image_data"]
 	for _, file := range files {
@@ -59,10 +64,14 @@ func Create(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "server error"})
 			return
 		}
-		p := filepath.Join("images", fmt.Sprintf("%s%s", id, filepath.Ext(file.Filename)))
+		fileName := fmt.Sprintf("%s%s", id, filepath.Ext(file.Filename))
+		p := filepath.Join("images", fileName)
+		blog.ImageURLs = append(blog.ImageURLs, model.ImageURL{URL: p})
 
 		c.SaveUploadedFile(file, p)
 	}
+
+	blog.Create()
 
 	c.Redirect(http.StatusFound, "/")
 }

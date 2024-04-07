@@ -1,64 +1,60 @@
 package model
 
 import (
-	"time"
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
+const DBName = "test.db"
+
 type Blog struct {
-	ID        string   `json:"id"`
-	Title     string   `json:"title"`
-	Content   string   `json:"content"`
-	Images    []string `json:"images"`
-	Thumbnail string   `json:"thumbnail"`
-	CreatedAt string   `json:"created_at"`
+	gorm.Model
+	Name      string
+	Body      string
+	ImageURLs []ImageURL `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
-var db map[string]interface{}
+type ImageURL struct {
+	gorm.Model
+	URL    string
+	BlogID uint
+}
 
 func init() {
-	blogs := []Blog{
-		{
-			ID:        "1",
-			Title:     "Title 1",
-			Content:   "Content 1",
-			Images:    []string{"images/sample1.png", "images/sample2.png"},
-			Thumbnail: "images/sample1.png",
-			CreatedAt: time.Now().Format("2006-01-02"),
-		},
-		{
-			ID:        "2",
-			Title:     "Title 2",
-			Content:   "Content 2",
-			Images:    []string{"images/sample3.png", "images/sample4.png"},
-			Thumbnail: "images/sample3.png",
-			CreatedAt: time.Now().Format("2006-01-02"),
-		},
-	}
-	db = make(map[string]interface{})
-	db["blogs"] = blogs
+	db := openDB()
+
+	db.AutoMigrate(&Blog{})
+	db.AutoMigrate(&ImageURL{})
 }
 
-func GetAll() []Blog {
-	blogs, ok := db["blogs"].([]Blog)
-	if !ok {
-		return []Blog{
-			{
-				Title: "No blog found",
-			},
-		}
+func openDB() *gorm.DB {
+	db, err := gorm.Open("sqlite3", DBName)
+	if err != nil {
+		panic("failed to connect database")
 	}
-	return blogs
+	return db
 }
 
-func GetByID(id string) Blog {
-	blogs, ok := db["blogs"].([]Blog)
-	if !ok {
-		return Blog{}
+// func GetAll() (datas []Blog) {
+// 	res := db.Find(&datas)
+// 	if res.Error != nil {
+// 		return
+// 	}
+// 	return datas
+// }
+
+// func GetOne(id int) (data Blog) {
+// 	result := db.First(&data, id)
+// 	if result.Error != nil {
+// 		panic(result.Error)
+// 	}
+// 	return data
+// }
+
+func (b *Blog) Create() {
+	db := openDB()
+	r := db.Create(b)
+	if r.Error != nil {
+		panic(r.Error)
 	}
-	for _, blog := range blogs {
-		if blog.ID == id {
-			return blog
-		}
-	}
-	return Blog{}
 }
