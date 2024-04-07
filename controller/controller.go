@@ -33,6 +33,7 @@ func ShowBlog(c *gin.Context) {
 	blog := model.GetOne(id)
 	showBlog := map[string]any{
 		"createdAt": blog.CreatedAt.Format("2006-01-02 15:04:05"),
+		"updatedAt": blog.UpdatedAt.Format("2006-01-02 15:04:05"),
 		"name":      blog.Name,
 		"body":      blog.Body,
 		"images":    blog.ImageURLs,
