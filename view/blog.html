@@ -14,5 +14,11 @@
       {{end}}
     </div>
     <p>{{.blog.CreatedAt}}</p>
+    {{if .authorized}}
+    <div>
+      <a href="/blog/{{.blog.ID}}/edit">編集</a>
+      <a href="/blog/{{.blog.ID}}/delete">削除</a>
+    </div>
+    {{end}}
   </body>
 </html>

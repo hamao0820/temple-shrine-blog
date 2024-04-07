@@ -6,6 +6,10 @@
     <title>Login</title>
   </head>
   <body>
+    {{if .authorized}}
+    <div>すでにログイン済みです</div>
+    <div><a href="/logout">ログアウトする</a></div>
+    {{else}}
     <form action="/login" method="post">
       <label for="username">Username</label>
       <input type="text" name="username" id="username" />
@@ -13,5 +17,6 @@
       <input type="password" name="password" id="password" />
       <button type="submit">Login</button>
     </form>
+    {{end}}
   </body>
 </html>

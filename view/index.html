@@ -35,10 +35,16 @@
       </ul>
     </div>
     <div>
+      {{with .authorized}}
       <a href="/create">新規作成</a>
+      {{end}}
     </div>
     <div>
+      {{if .authorized}}
+      <a href="/logout">ログアウト</a>
+      {{else}}
       <a href="/login">管理者ログイン</a>
+      {{end}}
     </div>
   </body>
 </html>
