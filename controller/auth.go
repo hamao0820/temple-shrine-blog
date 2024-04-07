@@ -56,6 +56,14 @@ func Login(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/")
 }
 
+func Logout(c *gin.Context) {
+	session := sessions.Default(c)
+	session.Clear()
+	session.Save()
+
+	c.Redirect(http.StatusFound, "/")
+}
+
 func generateToken(userID string) (string, error) {
 	now := time.Now()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{

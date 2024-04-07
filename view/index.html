@@ -41,7 +41,9 @@
     </div>
     <div>
       {{if .authorized}}
-      <a href="/logout">ログアウト</a>
+      <form action="/logout" method="post">
+        <button type="submit">ログアウト</button>
+      </form>
       {{else}}
       <a href="/login">管理者ログイン</a>
       {{end}}
