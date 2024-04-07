@@ -25,3 +25,11 @@ func ShowBlog(c *gin.Context) {
 func ShowLogin(c *gin.Context) {
 	c.HTML(http.StatusOK, "login.html", gin.H{})
 }
+
+func ShowCreate(c *gin.Context) {
+	c.HTML(http.StatusOK, "create.html", gin.H{})
+}
+
+func NeedToLogin(c *gin.Context) {
+	c.HTML(http.StatusUnauthorized, "need_to_login.html", gin.H{})
+}
