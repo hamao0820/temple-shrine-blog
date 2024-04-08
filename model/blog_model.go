@@ -59,3 +59,13 @@ func (b *Blog) Create() {
 		panic(r.Error)
 	}
 }
+
+func (b *Blog) Delete() {
+	db := openDB()
+	if r := db.Delete(b); r.Error != nil {
+		panic(r.Error)
+	}
+	if r := db.Where("blog_id = ?", b.ID).Delete(&ImageURL{}); r.Error != nil {
+		panic(r.Error)
+	}
+}

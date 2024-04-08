@@ -89,3 +89,10 @@ func Create(c *gin.Context) {
 
 	c.Redirect(http.StatusFound, "/")
 }
+
+func Delete(c *gin.Context) {
+	id := c.Param("id")
+	blog := model.GetOne(id)
+	blog.Delete()
+	c.Redirect(http.StatusFound, "/")
+}

@@ -18,8 +18,23 @@
     {{if .authorized}}
     <div>
       <a href="/blog/{{.blog.id}}/edit">編集</a>
-      <a href="/blog/{{.blog.id}}/delete">削除</a>
+      <form
+        action="/blog/{{.blog.id}}/delete"
+        method="post"
+        onSubmit="return checkDelete()"
+      >
+        <button type="submit">削除</button>
+      </form>
     </div>
     {{end}}
+
+    <script>
+      const checkDelete = () => {
+        const key = "delete {{.blog.id}}";
+        return (
+          window.prompt(`削除する場合は、${key}と入力してください`) === key
+        );
+      };
+    </script>
   </body>
 </html>
