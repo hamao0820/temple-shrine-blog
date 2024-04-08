@@ -2,12 +2,14 @@ package controller
 
 import (
 	"fmt"
+	_ "image/png"
+	"mime/multipart"
 	"net/http"
-	"path/filepath"
 	"temple-shrine-blog/model"
+	"temple-shrine-blog/util"
 
+	"github.com/disintegration/imaging"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 func Index(c *gin.Context) {
@@ -90,16 +92,13 @@ func Create(c *gin.Context) {
 
 	files := form.File["image_data"]
 	for _, file := range files {
-		id, err := uuid.NewRandom()
+		url, err := saveImage(file, c)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"message": "server error"})
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "cannot save image", "error": err})
 			return
 		}
-		fileName := fmt.Sprintf("%s%s", id, filepath.Ext(file.Filename))
-		p := filepath.Join("images", fileName)
-		blog.ImageURLs = append(blog.ImageURLs, model.ImageURL{URL: p})
 
-		c.SaveUploadedFile(file, p)
+		blog.ImageURLs = append(blog.ImageURLs, model.ImageURL{URL: url})
 	}
 
 	blog.Create()
@@ -131,22 +130,39 @@ func Edit(c *gin.Context) {
 	}
 	files := form.File["image_data"]
 	for _, file := range files {
-		id, err := uuid.NewRandom()
+		url, err := saveImage(file, c)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"message": "server error"})
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "cannot save image", "error": err})
 			return
 		}
-		fileName := fmt.Sprintf("%s%s", id, filepath.Ext(file.Filename))
-		p := filepath.Join("images", fileName)
-		imageURLs = append(imageURLs, model.ImageURL{URL: p})
 
-		c.SaveUploadedFile(file, p)
+		imageURLs = append(imageURLs, model.ImageURL{URL: url})
 	}
 	blog.Name = c.PostForm("name")
 	blog.Body = c.PostForm("body")
 	blog.ImageURLs = imageURLs
 	blog.Edit()
 	c.Redirect(http.StatusFound, fmt.Sprintf("/blog/%s", id))
+}
+
+func saveImage(file *multipart.FileHeader, c *gin.Context) (string, error) {
+	src, err := file.Open()
+	if err != nil {
+		return "", err
+	}
+	defer src.Close()
+
+	img, err := imaging.Decode(src, imaging.AutoOrientation(true))
+	if err != nil {
+		return "", err
+	}
+
+	url, err := util.SaveImage(img)
+	if err != nil {
+		return "", err
+	}
+
+	return url, nil
 }
 
 func Delete(c *gin.Context) {

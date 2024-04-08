@@ -1,3 +1,4 @@
 images
 .env
 *.db
+.DS_Store
