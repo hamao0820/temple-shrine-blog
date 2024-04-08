@@ -14,6 +14,22 @@
     >
       <label for="name">名前</label>
       <input type="text" name="name" id="name" value="{{.blog.name}}" />
+      <div>
+        <p>削除したい画像を選択してください</p>
+        <ul>
+          {{range .blog.images}}
+          <label for="check-{{.URL}}">
+            <img src="../../{{.URL}}" alt="" />
+          </label>
+          <input
+            type="checkbox"
+            name="delete-images[]"
+            id="check-{{.URL}}"
+            value="{{.URL}}"
+          />
+          {{end}}
+        </ul>
+      </div>
       <label for="body">本文</label>
       <input type="text" id="body" name="body" value="{{.blog.body}}" />
       <button type="submit">更新</button>

@@ -107,8 +107,24 @@ func Create(c *gin.Context) {
 func Edit(c *gin.Context) {
 	id := c.Param("id")
 	blog := model.GetOne(id)
+	deleteImages := c.PostFormArray("delete-images[]")
+	fmt.Println(deleteImages)
+	imageURLs := []model.ImageURL{}
+	for _, i := range blog.ImageURLs {
+		has := true
+		for _, d := range deleteImages {
+			if i.URL == d {
+				has = false
+				break
+			}
+		}
+		if has {
+			imageURLs = append(imageURLs, i)
+		}
+	}
 	blog.Name = c.PostForm("name")
 	blog.Body = c.PostForm("body")
+	blog.ImageURLs = imageURLs
 	blog.Edit()
 	c.Redirect(http.StatusFound, fmt.Sprintf("/blog/%s", id))
 }

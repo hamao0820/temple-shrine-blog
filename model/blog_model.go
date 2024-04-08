@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/jinzhu/gorm"
@@ -64,8 +65,30 @@ func (b *Blog) Create() {
 
 func (b *Blog) Edit() {
 	db := openDB()
+	var urls []ImageURL
+	if r := db.Where("blog_id = ?", b.ID).Find(&urls); r.Error != nil {
+		panic(r.Error)
+	}
+	fmt.Println(urls)
+	fmt.Println(b.ImageURLs)
 	if r := db.Save(b); r.Error != nil {
 		panic(r.Error)
+	}
+	for i := range urls {
+		url := urls[i]
+		has := false
+		for _, i := range b.ImageURLs {
+			if url.ID == i.ID {
+				has = true
+				break
+			}
+		}
+		if !has {
+			deleteImage(url.URL)
+			if r := db.Delete(&url); r.Error != nil {
+				panic(r.Error)
+			}
+		}
 	}
 }
 
