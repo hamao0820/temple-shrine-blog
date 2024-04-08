@@ -2,65 +2,61 @@ package util
 
 import (
 	"fmt"
-	"image"
 	_ "image/png"
+	"io"
 	"os"
 	"path/filepath"
 
-	"github.com/chai2010/webp"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/credentials"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/google/uuid"
+	"github.com/joho/godotenv"
 )
 
-const (
-	dir = "images"
-)
+var baseURL string
 
-func SaveImage(img image.Image) (string, error) {
+func init() {
+	err := godotenv.Load()
+	if err != nil {
+		panic(err)
+	}
+	baseURL = fmt.Sprintf("https://%s.s3.amazonaws.com/", os.Getenv("BUCKET_NAME"))
+}
+
+func SaveImage(src io.ReadSeeker) (string, error) {
 	uid, err := uuid.NewRandom()
 	if err != nil {
 		return "", err
 	}
-	fileName := fmt.Sprintf("%s.webp", uid.String())
-	p := filepath.Join(dir, fileName)
+	fileName := fmt.Sprintf("%s.jpg", uid.String())
 
-	file, err := os.Create(p)
+	credential := credentials.NewStaticCredentials(
+		os.Getenv("AWS_ACCESS_KEY"),
+		os.Getenv("AWS_SECRET_KEY"),
+		"",
+	)
+
+	awsConfig := aws.Config{
+		Region:      aws.String(os.Getenv("REGION")),
+		Credentials: credential,
+	}
+
+	s, err := session.NewSession(&awsConfig)
 	if err != nil {
 		return "", err
 	}
-	defer file.Close()
 
-	err = webp.Encode(file, img, nil)
+	svc := s3.New(s)
+	_, err = svc.PutObject(&s3.PutObjectInput{
+		Bucket: aws.String(os.Getenv("BUCKET_NAME")),
+		Key:    aws.String(fileName),
+		Body:   src,
+	})
 	if err != nil {
 		return "", err
 	}
 
-	return p, nil
+	return filepath.Join(baseURL, fileName), nil
 }
-
-// func resizeImage(img image.Image, width, height int) image.Image {
-// 	// 欲しいサイズの画像を新しく作る
-// 	newImage := image.NewRGBA(image.Rect(0, 0, width, height))
-
-// 	// サイズを変更しながら画像をコピーする
-// 	draw.CatmullRom.Scale(newImage, newImage.Bounds(), img, img.Bounds(), draw.Over, nil)
-
-// 	return newImage
-// }
-
-// func resizeImageKeepAspect(img image.Image, size float64) image.Image {
-// 	// 画像のサイズを取得する
-// 	width := float64(img.Bounds().Max.X)
-// 	height := float64(img.Bounds().Max.Y)
-
-// 	// 結果となる画像のサイズを計算する
-// 	if width > height {
-// 		height = height * size / width
-// 		width = size
-// 	} else {
-// 		width = width * size / height
-// 		height = size
-// 	}
-
-// 	// 先ほどの関数を使って画像をリサイズする
-// 	return resizeImage(img, int(width), int(height))
-// }

@@ -2,14 +2,11 @@ package controller
 
 import (
 	"fmt"
-	_ "image/png"
 	"mime/multipart"
 	"net/http"
 	"temple-shrine-blog/model"
 	"temple-shrine-blog/util"
 
-	"github.com/chai2010/webp"
-	"github.com/disintegration/imaging"
 	"github.com/gin-gonic/gin"
 )
 
@@ -153,19 +150,7 @@ func saveImage(file *multipart.FileHeader, c *gin.Context) (string, error) {
 	}
 	defer src.Close()
 
-	img, err := imaging.Decode(src, imaging.AutoOrientation(true))
-	if err != nil {
-		return "", err
-	}
-
-	webpImg := webp.NewRGBImage(img.Bounds())
-	for y := img.Bounds().Min.Y; y < img.Bounds().Max.Y; y++ {
-		for x := img.Bounds().Min.X; x < img.Bounds().Max.X; x++ {
-			webpImg.Set(x, y, img.At(x, y))
-		}
-	}
-
-	url, err := util.SaveImage(webpImg)
+	url, err := util.SaveImage(src)
 	if err != nil {
 		return "", err
 	}
