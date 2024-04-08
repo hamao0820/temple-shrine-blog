@@ -62,6 +62,13 @@ func (b *Blog) Create() {
 	}
 }
 
+func (b *Blog) Edit() {
+	db := openDB()
+	if r := db.Save(b); r.Error != nil {
+		panic(r.Error)
+	}
+}
+
 func (b *Blog) Delete() {
 	db := openDB()
 	if r := db.Delete(b); r.Error != nil {

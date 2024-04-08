@@ -55,6 +55,20 @@ func ShowCreate(c *gin.Context) {
 	c.HTML(http.StatusOK, "create.html", gin.H{})
 }
 
+func ShowEdit(c *gin.Context) {
+	id := c.Param("id")
+	blog := model.GetOne(id)
+	showBlog := map[string]any{
+		"name":   blog.Name,
+		"body":   blog.Body,
+		"images": blog.ImageURLs,
+		"id":     blog.ID,
+	}
+	c.HTML(http.StatusOK, "edit.html", gin.H{
+		"blog": showBlog,
+	})
+}
+
 func ShowNeedToLogin(c *gin.Context) {
 	c.HTML(http.StatusUnauthorized, "need_to_login.html", gin.H{})
 }
@@ -88,6 +102,15 @@ func Create(c *gin.Context) {
 	blog.Create()
 
 	c.Redirect(http.StatusFound, "/")
+}
+
+func Edit(c *gin.Context) {
+	id := c.Param("id")
+	blog := model.GetOne(id)
+	blog.Name = c.PostForm("name")
+	blog.Body = c.PostForm("body")
+	blog.Edit()
+	c.Redirect(http.StatusFound, fmt.Sprintf("/blog/%s", id))
 }
 
 func Delete(c *gin.Context) {
