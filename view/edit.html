@@ -30,6 +30,14 @@
           {{end}}
         </ul>
       </div>
+      <label for="image_data">画像を追加</label>
+      <input
+        type="file"
+        name="image_data"
+        multiple="multiple"
+        accept="image/*"
+        id="image_data"
+      />
       <label for="body">本文</label>
       <input type="text" id="body" name="body" value="{{.blog.body}}" />
       <button type="submit">更新</button>

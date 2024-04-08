@@ -126,6 +126,24 @@ func Edit(c *gin.Context) {
 			imageURLs = append(imageURLs, i)
 		}
 	}
+	form, err := c.MultipartForm()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "server error"})
+		return
+	}
+	files := form.File["image_data"]
+	for _, file := range files {
+		id, err := uuid.NewRandom()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "server error"})
+			return
+		}
+		fileName := fmt.Sprintf("%s%s", id, filepath.Ext(file.Filename))
+		p := filepath.Join("images", fileName)
+		imageURLs = append(imageURLs, model.ImageURL{URL: p})
+
+		c.SaveUploadedFile(file, p)
+	}
 	blog.Name = c.PostForm("name")
 	blog.Body = c.PostForm("body")
 	blog.ImageURLs = imageURLs
