@@ -4,6 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>登録</title>
+    <style>
+      #map {
+        height: 400px;
+        width: 400px;
+      }
+    </style>
   </head>
   <body>
     <h1>登録</h1>
@@ -22,5 +28,153 @@
       <input type="text" id="body" name="body" />
       <button type="submit">登録</button>
     </form>
+
+    <div id="map"></div>
+    <input type="text" id="pac-input" />
+
+    <div class="place-list"></div>
+
+    <script>
+      const $placeList = document.querySelector(".place-list");
+      const removePlaceItem = (id) => {
+        const $placeItem = $placeList.querySelector(`[data-id="${id}"]`);
+        $placeItem.remove();
+      };
+      const createPlaceItem = (id, name, address, lat, lng) => {
+        const $div = document.createElement("div");
+        $div.style.display = "flex";
+        $div.setAttribute("data-id", id);
+        const $name = document.createElement("input");
+        $name.type = "text";
+        $name.classList.add("name");
+        $name.value = name;
+        const $adress = document.createElement("input");
+        $adress.type = "text";
+        $adress.classList.add("address");
+        $adress.value = address;
+        const $coodinateDiv = document.createElement("div");
+        const $lat = document.createElement("input");
+        $lat.type = "number";
+        $lat.classList.add("lat");
+        $lat.value = lat;
+        const $lng = document.createElement("input");
+        $lng.type = "number";
+        $lng.classList.add("lng");
+        $lng.value = lng;
+        $coodinateDiv.appendChild($lat);
+        $coodinateDiv.appendChild($lng);
+        const $removeButton = document.createElement("button");
+        $removeButton.textContent = "削除";
+        $removeButton.addEventListener("click", () => {
+          removePlaceItem(id);
+          const marker = markers.find((marker) => marker.id === id);
+          if (marker) {
+            marker.marker.setMap(null);
+          } else {
+            console.error("marker not found");
+          }
+        });
+        $div.appendChild($name);
+        $div.appendChild($adress);
+        $div.appendChild($coodinateDiv);
+        $div.appendChild($removeButton);
+        return $div;
+      };
+
+      const addPlaceItem = (id, name, address, lat, lng) => {
+        const $placeItem = createPlaceItem(id, name, address, lat, lng);
+        $placeList.appendChild($placeItem);
+      };
+
+      const markers = [];
+
+      const initMap = () => {
+        const myLatlng = new google.maps.LatLng(35.1538545, 136.9586298);
+        const mapOptions = {
+          zoom: 13,
+          center: myLatlng,
+          mapTypeId: "roadmap",
+        };
+        const map = new google.maps.Map(
+          document.getElementById("map"),
+          mapOptions
+        );
+
+        const input = document.getElementById("pac-input");
+        const searchBox = new google.maps.places.SearchBox(input);
+
+        map.addListener("bounds_changed", () => {
+          searchBox.setBounds(map.getBounds());
+        });
+
+        searchBox.addListener("places_changed", () => {
+          const places = searchBox.getPlaces();
+
+          if (places.length == 0) {
+            return;
+          }
+
+          const bounds = new google.maps.LatLngBounds();
+
+          places.forEach((place) => {
+            if (!place.geometry || !place.geometry.location) {
+              console.log("Returned place contains no geometry");
+              return;
+            }
+
+            const marker = new google.maps.Marker({
+              map,
+              title: place.name,
+              position: place.geometry.location,
+              draggable: true,
+            });
+
+            markers.push({
+              id: place.place_id,
+              marker,
+            });
+
+            // add place item
+            addPlaceItem(
+              place.place_id,
+              place.name,
+              place.formatted_address,
+              place.geometry.location.lat(),
+              place.geometry.location.lng()
+            );
+
+            // update lat lng
+            marker.addListener("dragend", (event) => {
+              const lat = event.latLng.lat();
+              const lng = event.latLng.lng();
+              const $placeItem = $placeList.querySelector(
+                `[data-id="${place.place_id}"]`
+              );
+              $placeItem.querySelector(".lat").value = lat;
+              $placeItem.querySelector(".lng").value = lng;
+            });
+
+            // remove marker
+            marker.addListener("dblclick", (event) => {
+              marker.setMap(null);
+              removePlaceItem(place.place_id);
+            });
+
+            if (place.geometry.viewport) {
+              bounds.union(place.geometry.viewport);
+            } else {
+              bounds.extend(place.geometry.location);
+            }
+          });
+          map.fitBounds(bounds);
+        });
+      };
+
+      window.initMap = initMap;
+    </script>
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&callback=initMap&libraries=places&v=weekly"
+      defer
+    ></script>
   </body>
 </html>

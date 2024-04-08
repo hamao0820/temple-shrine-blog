@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"mime/multipart"
 	"net/http"
+	"os"
 	"temple-shrine-blog/model"
 	"temple-shrine-blog/util"
 
@@ -56,7 +57,9 @@ func ShowLogin(c *gin.Context) {
 }
 
 func ShowCreate(c *gin.Context) {
-	c.HTML(http.StatusOK, "create.html", gin.H{})
+	c.HTML(http.StatusOK, "create.html", gin.H{
+		"api_key": os.Getenv("GOOGLE_MAPS_API_KEY"),
+	})
 }
 
 func ShowEdit(c *gin.Context) {
