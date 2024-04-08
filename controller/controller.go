@@ -5,6 +5,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"strconv"
 	"temple-shrine-blog/model"
 	"temple-shrine-blog/util"
 
@@ -82,9 +83,23 @@ func ShowNeedToLogin(c *gin.Context) {
 
 func Create(c *gin.Context) {
 	blog := &model.Blog{
-		Name: c.PostForm("name"),
-		Body: c.PostForm("body"),
+		Name:    c.PostForm("name"),
+		Body:    c.PostForm("body"),
+		Address: c.PostForm("address"),
 	}
+	lat, err := strconv.ParseFloat(c.PostForm("lat"), 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "invalid lat"})
+		return
+	}
+	blog.Lat = lat
+	lng, err := strconv.ParseFloat(c.PostForm("lng"), 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "invalid lng"})
+		return
+	}
+	blog.Lng = lng
+
 	form, err := c.MultipartForm()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "server error"})

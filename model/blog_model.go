@@ -13,6 +13,9 @@ type Blog struct {
 	gorm.Model
 	Name      string
 	Body      string
+	Address   string
+	Lat       float64
+	Lng       float64
 	ImageURLs []ImageURL `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL,foreignkey:OrganizationID;"`
 }
 
