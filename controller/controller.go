@@ -8,6 +8,7 @@ import (
 	"temple-shrine-blog/model"
 	"temple-shrine-blog/util"
 
+	"github.com/chai2010/webp"
 	"github.com/disintegration/imaging"
 	"github.com/gin-gonic/gin"
 )
@@ -157,7 +158,14 @@ func saveImage(file *multipart.FileHeader, c *gin.Context) (string, error) {
 		return "", err
 	}
 
-	url, err := util.SaveImage(img)
+	webpImg := webp.NewRGBImage(img.Bounds())
+	for y := img.Bounds().Min.Y; y < img.Bounds().Max.Y; y++ {
+		for x := img.Bounds().Min.X; x < img.Bounds().Max.X; x++ {
+			webpImg.Set(x, y, img.At(x, y))
+		}
+	}
+
+	url, err := util.SaveImage(webpImg)
 	if err != nil {
 		return "", err
 	}
