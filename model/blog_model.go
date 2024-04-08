@@ -1,6 +1,8 @@
 package model
 
 import (
+	"os"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
@@ -65,7 +67,14 @@ func (b *Blog) Delete() {
 	if r := db.Delete(b); r.Error != nil {
 		panic(r.Error)
 	}
+	for _, i := range b.ImageURLs {
+		deleteImage(i.URL)
+	}
 	if r := db.Where("blog_id = ?", b.ID).Delete(&ImageURL{}); r.Error != nil {
 		panic(r.Error)
 	}
+}
+
+func deleteImage(name string) {
+	os.Remove(name)
 }
