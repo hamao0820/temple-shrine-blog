@@ -14,8 +14,12 @@ func Index(c *gin.Context) {
 	blogs := model.GetAll()
 	var showBlogs []map[string]any
 	for _, b := range blogs {
+		thumbnail := "images/thumbnail.png"
+		if len(b.ImageURLs) > 0 {
+			thumbnail = b.ImageURLs[0].URL
+		}
 		showblog := map[string]any{
-			"thumbnail": b.ImageURLs[0].URL,
+			"thumbnail": thumbnail,
 			"createdAt": b.CreatedAt.Format("2006-01-02 15:04:05"),
 			"name":      b.Name,
 			"id":        b.ID,
