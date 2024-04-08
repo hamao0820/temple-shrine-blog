@@ -82,7 +82,6 @@ func Create(c *gin.Context) {
 		Name: c.PostForm("name"),
 		Body: c.PostForm("body"),
 	}
-	fmt.Println(blog)
 	form, err := c.MultipartForm()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "server error"})
@@ -112,7 +111,6 @@ func Edit(c *gin.Context) {
 	id := c.Param("id")
 	blog := model.GetOne(id)
 	deleteImages := c.PostFormArray("delete-images[]")
-	fmt.Println(deleteImages)
 	imageURLs := []model.ImageURL{}
 	for _, i := range blog.ImageURLs {
 		has := true

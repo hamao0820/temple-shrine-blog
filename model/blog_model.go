@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/jinzhu/gorm"
@@ -69,8 +68,6 @@ func (b *Blog) Edit() {
 	if r := db.Where("blog_id = ?", b.ID).Find(&urls); r.Error != nil {
 		panic(r.Error)
 	}
-	fmt.Println(urls)
-	fmt.Println(b.ImageURLs)
 	if r := db.Save(b); r.Error != nil {
 		panic(r.Error)
 	}
