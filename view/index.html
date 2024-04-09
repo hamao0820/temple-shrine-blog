@@ -4,49 +4,162 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>神社･お寺巡り日記</title>
+    <style>
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+      }
+      button {
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        outline: none;
+        padding: 0;
+        appearance: none;
+      }
+      @media screen and (max-width: 600px) {
+        .title {
+          font-size: 1.5rem;
+        }
+        .login-button,
+        .logout-button,
+        .create-button {
+          font-size: 0.8rem;
+          padding: 5px;
+        }
+        .header-actions {
+          flex-direction: column;
+          gap: 5px;
+        }
+      }
+      .header-actions {
+        display: flex;
+        gap: 10px;
+        padding: 0 10px;
+        justify-content: center;
+        align-items: center;
+      }
+      .create-button {
+        padding: 5px 10px;
+        border: none;
+        border-bottom: 1px solid gray;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .logout-button {
+        padding: 5px 10px;
+        border: none;
+        border-bottom: 1px solid gray;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .login-button {
+        padding: 5px 10px;
+        border: none;
+        border-bottom: 1px solid gray;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .description-container {
+        max-width: 960px;
+        margin: 5px auto;
+        padding: 5px;
+        border-radius: 5px;
+      }
+      .view-container {
+        display: flex;
+        justify-content: center;
+        margin-top: 5px;
+      }
+      .blog-list-container {
+        margin-top: 5px;
+        max-width: 960px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        border-radius: 5px;
+      }
+      .blog-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .blog-item {
+        width: 45%;
+        min-width: 350px;
+        display: flex;
+        gap: 10px;
+        border-radius: 5px;
+      }
+      .blog-info {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .created-at {
+        margin: 0;
+        color: #666;
+      }
+    </style>
   </head>
   <body>
-    <h1>神社･お寺巡り日記</h1>
-    <p>神社･お寺巡り日記へようこそ！</p>
-    <p>
-      このサイトは、<a href="https://twitter.com/hamao_0820" target="_blank"
-        >はまお</a
-      >が巡った神社やお寺を紹介するサイトです。
-    </p>
-    <div>
-      ブログ一覧
-      <ul>
-        {{range .blogs}}
-        <li>
-          <a href="/blog/{{.id}}">
-            <div>
-              <img
-                src="{{.thumbnail}}"
-                alt="{{.name}}の画像"
-                width="50px"
-                height="50px"
-              />
-              <h2>{{.name}}</h2>
-              <p>{{.createdAt}}</p>
-            </div>
-          </a>
-        </li>
+    <header>
+      <h1 class="title">神社･お寺巡り日記</h1>
+      <div class="header-actions">
+        {{if .authorized}}
+        <form action="/logout" method="post">
+          <button type="submit" class="logout-button">ログアウト</button>
+        </form>
+        {{else}}
+        <a href="/login" class="login-button">管理者ログイン</a>
         {{end}}
-      </ul>
-    </div>
+        <!--  -->
+        {{with .authorized}}
+        <a href="/create" class="create-button">新規作成</a>
+        {{end}}
+      </div>
+    </header>
     <div>
-      {{with .authorized}}
-      <a href="/create">新規作成</a>
-      {{end}}
-    </div>
-    <div>
-      {{if .authorized}}
-      <form action="/logout" method="post">
-        <button type="submit">ログアウト</button>
-      </form>
-      {{else}}
-      <a href="/login">管理者ログイン</a>
-      {{end}}
+      <div class="description-container">
+        <p>神社･お寺巡り日記へようこそ！</p>
+        <p>
+          このサイトは、<a href="https://twitter.com/hamao_0820" target="_blank"
+            >はまお</a
+          >が巡った神社やお寺を紹介するブログサイトです。
+        </p>
+      </div>
+      <div class="view-container">
+        <div class="blog-list-container">
+          <h2>ブログ一覧</h2>
+          <div class="blog-list">
+            {{range .blogs}}
+            <div class="blog-item">
+              <a href="/blog/{{.id}}">
+                <img
+                  src="{{.thumbnail}}"
+                  alt="{{.name}}の画像"
+                  width="150"
+                  height="150"
+                />
+              </a>
+              <a href="/blog/{{.id}}">
+                <div class="blog-info">
+                  <h3>{{.name}}</h3>
+                  <p class="created-at">{{.createdAt}}</p>
+                </div>
+              </a>
+            </div>
+            {{end}}
+          </div>
+        </div>
+      </div>
     </div>
   </body>
 </html>
