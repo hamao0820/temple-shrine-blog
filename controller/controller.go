@@ -70,10 +70,13 @@ func ShowEdit(c *gin.Context) {
 	id := c.Param("id")
 	blog := model.GetOne(id)
 	showBlog := map[string]any{
-		"name":   blog.Name,
-		"body":   blog.Body,
-		"images": blog.ImageURLs,
-		"id":     blog.ID,
+		"name":    blog.Name,
+		"body":    blog.Body,
+		"images":  blog.ImageURLs,
+		"id":      blog.ID,
+		"address": blog.Address,
+		"lat":     blog.Lat,
+		"lng":     blog.Lng,
 	}
 	c.HTML(http.StatusOK, "edit.html", gin.H{
 		"blog": showBlog,
@@ -159,6 +162,19 @@ func Edit(c *gin.Context) {
 	}
 	blog.Name = c.PostForm("name")
 	blog.Body = c.PostForm("body")
+	blog.Address = c.PostForm("address")
+	lat, err := strconv.ParseFloat(c.PostForm("lat"), 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "invalid lat"})
+		return
+	}
+	blog.Lat = lat
+	lng, err := strconv.ParseFloat(c.PostForm("lng"), 64)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "invalid lng"})
+		return
+	}
+	blog.Lng = lng
 	blog.ImageURLs = imageURLs
 	blog.Edit()
 	c.Redirect(http.StatusFound, fmt.Sprintf("/blog/%s", id))

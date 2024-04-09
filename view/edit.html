@@ -4,6 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>編集</title>
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB41DRUbKWJHPxaFjMAwdrzWzbVKartNGg&callback=initMap&libraries=places&v=weekly"
+      defer
+    ></script>
+    <style>
+      #map {
+        height: 400px;
+        width: 400px;
+      }
+    </style>
   </head>
   <body>
     <h1>編集</h1>
@@ -38,10 +48,160 @@
         accept="image/*"
         id="image_data"
       />
+      <div id="address-form">
+        <label for="address">住所</label>
+        <input
+          type="text"
+          id="address"
+          name="address"
+          value="{{.blog.address}}"
+        />
+        <label for="lat">lat:</label>
+        <input
+          type="number"
+          id="lat"
+          name="lat"
+          readonly
+          value="{{.blog.lat}}"
+        />
+        <label for="lng">lng:</label>
+        <input
+          type="number"
+          id="lng"
+          name="lng"
+          readonly
+          value="{{.blog.lng}}"
+        />
+      </div>
       <label for="body">本文</label>
       <input type="text" id="body" name="body" value="{{.blog.body}}" />
       <button type="submit">更新</button>
     </form>
+
+    <input type="text" id="pac-input" />
+    <div id="map"></div>
+
     <a href="/blog/{{.blog.id}}">キャンセル</a>
+
+    <div id="_lat" style="display: none">{{.blog.lat}}</div>
+    <div id="_lng" style="display: none">{{.blog.lng}}</div>
+    <script>
+      const setAddressForm = (address, lat, lng) => {
+        const $address = document.getElementById("address");
+        const $lat = document.getElementById("lat");
+        const $lng = document.getElementById("lng");
+
+        $address.value = address;
+        $lat.value = lat;
+        $lng.value = lng;
+      };
+
+      const lat = parseFloat(document.getElementById("_lat").textContent);
+      const lng = parseFloat(document.getElementById("_lng").textContent);
+
+      const initMap = () => {
+        const myLatLng = new google.maps.LatLng(lat, lng);
+        const mapOptions = {
+          zoom: 13,
+          center: myLatLng,
+          mapTypeId: "roadmap",
+        };
+        const map = new google.maps.Map(
+          document.getElementById("map"),
+          mapOptions
+        );
+
+        const input = document.getElementById("pac-input");
+        input.addEventListener("click", (e) => {
+          e.target.select();
+        });
+        const searchBox = new google.maps.places.SearchBox(input);
+
+        map.addListener("bounds_changed", () => {
+          searchBox.setBounds(map.getBounds());
+        });
+
+        let marker = new google.maps.Marker({
+          map,
+          position: { lat, lng },
+          draggable: true,
+        });
+
+        // update lat lng
+        marker.addListener("dragend", (event) => {
+          const lat = event.latLng.lat();
+          const lng = event.latLng.lng();
+          const newAddress = new google.maps.Geocoder();
+          newAddress.geocode({ location: { lat, lng } }, (results) => {
+            setAddressForm(results[0].formatted_address, lat, lng);
+          });
+        });
+
+        // remove marker
+        marker.addListener("dblclick", (event) => {
+          marker.setMap(null);
+          setAddressForm("", "", "", "");
+        });
+
+        searchBox.addListener("places_changed", () => {
+          const places = searchBox.getPlaces();
+
+          if (places.length == 0) {
+            return;
+          }
+
+          const bounds = new google.maps.LatLngBounds();
+
+          const place = places[0];
+
+          if (!place.geometry || !place.geometry.location) {
+            console.log("Returned place contains no geometry");
+            return;
+          }
+
+          if (marker) {
+            marker.setMap(null);
+          }
+
+          marker = new google.maps.Marker({
+            map,
+            title: place.name,
+            position: place.geometry.location,
+            draggable: true,
+          });
+
+          setAddressForm(
+            place.formatted_address,
+            place.geometry.location.lat(),
+            place.geometry.location.lng()
+          );
+
+          // update lat lng
+          marker.addListener("dragend", (event) => {
+            const lat = event.latLng.lat();
+            const lng = event.latLng.lng();
+            const newAddress = new google.maps.Geocoder();
+            newAddress.geocode({ location: { lat, lng } }, (results) => {
+              setAddressForm(results[0].formatted_address, lat, lng);
+            });
+          });
+
+          // remove marker
+          marker.addListener("dblclick", (event) => {
+            marker.setMap(null);
+            setAddressForm("", "", "", "");
+          });
+
+          if (place.geometry.viewport) {
+            bounds.union(place.geometry.viewport);
+          } else {
+            bounds.extend(place.geometry.location);
+          }
+          map.fitBounds(bounds);
+        });
+      };
+
+      window.initMap = initMap;
+    </script>
   </body>
 </html>
