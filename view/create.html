@@ -4,6 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>登録</title>
+
+    <!-- prettier-ignore -->
+    <script>(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
+        ({key: "{{.api_key}}", v: "beta"});</script>
+
     <style>
       #map {
         height: 400px;
@@ -54,23 +59,30 @@
         $lng.value = lng;
       };
 
-      const initMap = () => {
-        const myLatlng = new google.maps.LatLng(35.1538545, 136.9586298);
+      const initMap = async () => {
+        const position = { lat: 35.1538545, lng: 136.9586298 };
+
+        const { Map } = await google.maps.importLibrary("maps");
+        const { SearchBox } = await google.maps.importLibrary("places");
+        const { AdvancedMarkerView } = await google.maps.importLibrary(
+          "marker"
+        );
+        const { LatLngBounds } = await google.maps.importLibrary("core");
+        const { Geocoder } = await google.maps.importLibrary("geocoding");
+
         const mapOptions = {
           zoom: 13,
-          center: myLatlng,
+          center: position,
           mapTypeId: "roadmap",
+          mapId: "DEMO_MAP_ID",
         };
-        const map = new google.maps.Map(
-          document.getElementById("map"),
-          mapOptions
-        );
+        const map = new Map(document.getElementById("map"), mapOptions);
 
         const input = document.getElementById("pac-input");
         input.addEventListener("click", (e) => {
           e.target.select();
         });
-        const searchBox = new google.maps.places.SearchBox(input);
+        const searchBox = new SearchBox(input);
 
         map.addListener("bounds_changed", () => {
           searchBox.setBounds(map.getBounds());
@@ -85,7 +97,7 @@
             return;
           }
 
-          const bounds = new google.maps.LatLngBounds();
+          const bounds = new LatLngBounds();
 
           const place = places[0];
 
@@ -98,11 +110,11 @@
             marker.setMap(null);
           }
 
-          marker = new google.maps.Marker({
+          marker = new AdvancedMarkerView({
             map,
             title: place.name,
             position: place.geometry.location,
-            draggable: true,
+            gmpDraggable: true,
           });
 
           setAddressForm(
@@ -115,7 +127,7 @@
           marker.addListener("dragend", (event) => {
             const lat = event.latLng.lat();
             const lng = event.latLng.lng();
-            const newAddress = new google.maps.Geocoder();
+            const newAddress = new Geocoder();
             newAddress.geocode({ location: { lat, lng } }, (results) => {
               setAddressForm(results[0].formatted_address, lat, lng);
             });
@@ -136,11 +148,7 @@
         });
       };
 
-      window.initMap = initMap;
+      initMap();
     </script>
-    <script
-      src="https://maps.googleapis.com/maps/api/js?key={{.api_key}}&callback=initMap&libraries=places&v=weekly"
-      defer
-    ></script>
   </body>
 </html>
