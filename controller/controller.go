@@ -44,10 +44,13 @@ func ShowBlog(c *gin.Context) {
 		"body":      blog.Body,
 		"images":    blog.ImageURLs,
 		"id":        blog.ID,
+		"lat":       blog.Lat,
+		"lng":       blog.Lng,
 	}
 	c.HTML(http.StatusOK, "blog.html", gin.H{
 		"blog":       showBlog,
 		"authorized": Authorized(c),
+		"api_key":    os.Getenv("GOOGLE_MAPS_API_KEY"),
 	})
 }
 

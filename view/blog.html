@@ -4,6 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Blog</title>
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key={{.api_key}}&callback=initMap&libraries=places&v=weekly"
+      defer
+    ></script>
+    <style>
+      #map {
+        height: 300px;
+        width: 300px;
+      }
+    </style>
   </head>
   <body>
     <h1>{{.blog.name}}</h1>
@@ -13,6 +23,7 @@
       <img src="{{.URL}}" alt="image" width="300px" />
       {{end}}
     </div>
+    <div id="map"></div>
     <p>{{.blog.body}}</p>
     <p>作成日時: {{.blog.createdAt}}</p>
     <p>更新日時: {{.blog.updatedAt}}</p>
@@ -29,6 +40,8 @@
     </div>
     {{end}}
 
+    <div id="lat" style="display: none">{{.blog.lat}}</div>
+    <div id="lng" style="display: none">{{.blog.lng}}</div>
     <script>
       const checkDelete = () => {
         const key = "delete {{.blog.id}}";
@@ -36,6 +49,22 @@
           window.prompt(`削除する場合は、${key}と入力してください`) === key
         );
       };
+    </script>
+    <script>
+      const initMap = () => {
+        const lat = parseFloat(document.getElementById("lat").textContent);
+        const lng = parseFloat(document.getElementById("lng").textContent);
+        const map = new google.maps.Map(document.getElementById("map"), {
+          center: { lat, lng },
+          zoom: 13,
+        });
+        const marker = new google.maps.Marker({
+          map,
+          position: { lat, lng },
+        });
+      };
+
+      window.initMap = initMap;
     </script>
   </body>
 </html>
