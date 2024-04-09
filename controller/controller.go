@@ -79,7 +79,8 @@ func ShowEdit(c *gin.Context) {
 		"lng":     blog.Lng,
 	}
 	c.HTML(http.StatusOK, "edit.html", gin.H{
-		"blog": showBlog,
+		"blog":    showBlog,
+		"api_key": os.Getenv("GOOGLE_MAPS_API_KEY"),
 	})
 }
 
