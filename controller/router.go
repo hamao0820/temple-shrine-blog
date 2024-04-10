@@ -11,6 +11,7 @@ func GetRouter() *gin.Engine {
 	r.Use(sessions.Sessions("LoginSession", store))
 	r.LoadHTMLGlob("view/*.html")
 	r.Static("images", "./images")
+	r.Static("assets", "./assets")
 	r.GET("/", Index)
 	r.GET("/blog/:id", ShowBlog)
 	r.GET("/login", ShowLogin)
