@@ -13,14 +13,33 @@
         width: 300px;
       }
     </style>
+    <link rel="stylesheet" href="../assets/css/header.css" />
+    <link rel="stylesheet" href="../assets/css/blog.css" />
+    <script src="../assets/js/blog.js" defer></script>
   </head>
   <body>
-    <h1>{{.blog.name}}</h1>
+    {{template "header" .}}
+    <h2>{{.blog.name}}</h2>
     <a href="/">一覧ページに戻る</a>
-    <div>
-      {{range .blog.images}}
-      <img src="{{.URL}}" alt="image" width="300px" />
-      {{end}}
+    <div class="slide-wrapper">
+      <!-- スライド（コンテンツ） -->
+      <div id="slide" class="slide">
+        {{range .blog.images}}
+        <div>
+          <img src="{{.URL}}" alt="image" />
+          <!-- <p>slide</p> -->
+        </div>
+        {{end}}
+      </div>
+      <!-- 左右のボタン -->
+      <span id="prev" class="prev"></span>
+      <span id="next" class="next"></span>
+      <!-- インジケーター -->
+      <ul class="indicator" id="indicator">
+        {{range .blog.images}}
+        <li class="list"></li>
+        {{end}}
+      </ul>
     </div>
     <div id="map"></div>
     <p>{{.blog.body}}</p>
