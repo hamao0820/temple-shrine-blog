@@ -62,13 +62,10 @@
     </div>
     {{end}}
 
-    <div id="lat" style="display: none">{{.blog.lat}}</div>
-    <div id="lng" style="display: none">{{.blog.lng}}</div>
-
     <script>
       const initMap = async () => {
-        const lat = parseFloat(document.getElementById("lat").textContent);
-        const lng = parseFloat(document.getElementById("lng").textContent);
+        const lat = parseFloat("{{.blog.lat}}");
+        const lng = parseFloat("{{.blog.lng}}");
         const position = { lat, lng };
 
         const { Map } = await google.maps.importLibrary("maps");
