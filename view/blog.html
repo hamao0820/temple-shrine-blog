@@ -64,14 +64,6 @@
 
     <div id="lat" style="display: none">{{.blog.lat}}</div>
     <div id="lng" style="display: none">{{.blog.lng}}</div>
-    <script>
-      const checkDelete = () => {
-        const key = "delete {{.blog.id}}";
-        return (
-          window.prompt(`削除する場合は、${key}と入力してください`) === key
-        );
-      };
-    </script>
 
     <script>
       const initMap = async () => {

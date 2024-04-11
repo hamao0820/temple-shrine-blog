@@ -95,3 +95,8 @@ slide.addEventListener("touchend", (e) => {
     nextClick();
   }
 });
+
+const checkDelete = () => {
+  const key = "delete";
+  return window.prompt(`削除する場合は、${key}と入力してください`) === key;
+};
