@@ -3,8 +3,6 @@ package util
 import (
 	"bytes"
 	"fmt"
-	"image"
-	"image/jpeg"
 	_ "image/png"
 	"io"
 	"os"
@@ -14,6 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/disintegration/imaging"
 	"github.com/google/uuid"
 	"github.com/joho/godotenv"
 	"gitlab.com/osaki-lab/iowrapper"
@@ -52,13 +51,15 @@ func SaveImage(src io.Reader) (string, error) {
 		return "", err
 	}
 
-	img, _, err := image.Decode(src)
+	img, err := imaging.Decode(src, imaging.AutoOrientation(true))
 	if err != nil {
 		return "", err
 	}
 
+	resizedImage := imaging.Resize(img, img.Bounds().Dx()/2, 0, imaging.Lanczos)
+
 	var buffer bytes.Buffer
-	if err := jpeg.Encode(&buffer, img, &jpeg.Options{Quality: 75}); err != nil {
+	if err := imaging.Encode(&buffer, resizedImage, imaging.JPEG, imaging.JPEGQuality(60)); err != nil {
 		return "", err
 	}
 
