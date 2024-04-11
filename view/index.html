@@ -4,25 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>神社･お寺巡り日記</title>
+    <link rel="stylesheet" href="assets/css/header.css" />
     <link rel="stylesheet" href="assets/css/index.css" />
   </head>
   <body>
-    <header>
-      <h1 class="title">神社･お寺巡り日記</h1>
-      <div class="header-actions">
-        {{if .authorized}}
-        <form action="/logout" method="post">
-          <button type="submit" class="logout-button">ログアウト</button>
-        </form>
-        {{else}}
-        <a href="/login" class="login-button">管理者ログイン</a>
-        {{end}}
-        <!--  -->
-        {{with .authorized}}
-        <a href="/create" class="create-button">新規作成</a>
-        {{end}}
-      </div>
-    </header>
+    {{template "header" .}}
     <div>
       <div class="description-container">
         <p>神社･お寺巡り日記へようこそ！</p>

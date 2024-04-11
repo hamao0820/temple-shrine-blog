@@ -1,0 +1,18 @@
+{{define "header"}}
+<header>
+  <h1 class="title">神社･お寺巡り日記</h1>
+  <div class="header-actions">
+    {{if .authorized}}
+    <form action="/logout" method="post">
+      <button type="submit" class="logout-button">ログアウト</button>
+    </form>
+    {{else}}
+    <a href="/login" class="login-button">管理者ログイン</a>
+    {{end}}
+    <!--  -->
+    {{with .authorized}}
+    <a href="/create" class="create-button">新規作成</a>
+    {{end}}
+  </div>
+</header>
+{{end}}
