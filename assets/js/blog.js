@@ -53,3 +53,45 @@ indicator.addEventListener("click", (event) => {
     slide.style.transform = calcTranslateX(count);
   }
 });
+
+const minimumDistance = 30;
+let startX = 0;
+let endX = 0;
+
+slide.addEventListener("mousedown", (e) => {
+  startX = e.pageX;
+});
+
+slide.addEventListener("mouseup", (e) => {
+  endX = e.pageX;
+  const distanceX = Math.abs(endX - startX);
+
+  if (distanceX < minimumDistance) {
+    return;
+  }
+
+  if (endX - startX > 0) {
+    prevClick();
+  } else {
+    nextClick();
+  }
+});
+
+slide.addEventListener("touchstart", (e) => {
+  startX = e.touches[0].pageX;
+});
+
+slide.addEventListener("touchend", (e) => {
+  endX = e.changedTouches[0].pageX;
+  const distanceX = Math.abs(endX - startX);
+
+  if (distanceX < minimumDistance) {
+    return;
+  }
+
+  if (endX - startX > 0) {
+    prevClick();
+  } else {
+    nextClick();
+  }
+});
