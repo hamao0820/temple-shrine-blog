@@ -4,14 +4,13 @@ go 1.21.5
 
 require (
 	github.com/aws/aws-sdk-go v1.51.16
-	github.com/chai2010/webp v1.1.1
-	github.com/disintegration/imaging v1.6.2
 	github.com/gin-gonic/contrib v0.0.0-20221130124618-7e01895a63f2
 	github.com/gin-gonic/gin v1.9.1
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/uuid v1.6.0
 	github.com/jinzhu/gorm v1.9.16
 	github.com/joho/godotenv v1.5.1
+	gitlab.com/osaki-lab/iowrapper v0.0.0-20201210013351-bab12bc19f54
 )
 
 require (
@@ -43,7 +42,6 @@ require (
 	github.com/ugorji/go/codec v1.2.11 // indirect
 	golang.org/x/arch v0.3.0 // indirect
 	golang.org/x/crypto v0.14.0 // indirect
-	golang.org/x/image v0.0.0-20211028202545-6944b10bf410 // indirect
 	golang.org/x/net v0.17.0 // indirect
 	golang.org/x/sys v0.13.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
