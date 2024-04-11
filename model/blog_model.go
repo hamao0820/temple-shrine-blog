@@ -1,7 +1,7 @@
 package model
 
 import (
-	"os"
+	"temple-shrine-blog/util"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
@@ -84,7 +84,7 @@ func (b *Blog) Edit() {
 			}
 		}
 		if !has {
-			deleteImage(url.URL)
+			util.DeleteImage(url.URL)
 			if r := db.Delete(&url); r.Error != nil {
 				panic(r.Error)
 			}
@@ -98,13 +98,12 @@ func (b *Blog) Delete() {
 		panic(r.Error)
 	}
 	for _, i := range b.ImageURLs {
-		deleteImage(i.URL)
+		err := util.DeleteImage(i.URL)
+		if err != nil {
+			panic(err)
+		}
 	}
 	if r := db.Where("blog_id = ?", b.ID).Delete(&ImageURL{}); r.Error != nil {
 		panic(r.Error)
 	}
-}
-
-func deleteImage(name string) {
-	os.Remove(name)
 }

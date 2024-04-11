@@ -76,3 +76,29 @@ func SaveImage(src io.Reader) (string, error) {
 
 	return filepath.Join(baseURL, fileName), nil
 }
+
+func DeleteImage(url string) error {
+	credential := credentials.NewStaticCredentials(
+		os.Getenv("AWS_ACCESS_KEY"),
+		os.Getenv("AWS_SECRET_KEY"),
+		"",
+	)
+
+	awsConfig := aws.Config{
+		Region:      aws.String(os.Getenv("REGION")),
+		Credentials: credential,
+	}
+
+	s, err := session.NewSession(&awsConfig)
+	if err != nil {
+		return err
+	}
+
+	svc := s3.New(s)
+	_, err = svc.DeleteObject(&s3.DeleteObjectInput{
+		Bucket: aws.String(os.Getenv("BUCKET_NAME")),
+		Key:    aws.String(filepath.Base(url)),
+	})
+
+	return err
+}
