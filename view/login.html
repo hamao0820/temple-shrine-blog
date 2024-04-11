@@ -4,19 +4,23 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login</title>
+    <link rel="stylesheet" href="assets/css/login.css" />
   </head>
   <body>
     {{if .authorized}}
     <div>すでにログイン済みです</div>
     <div><a href="/logout">ログアウトする</a></div>
     {{else}}
-    <form action="/login" method="post">
-      <label for="username">Username</label>
-      <input type="text" name="username" id="username" />
-      <label for="password">Password</label>
-      <input type="password" name="password" id="password" />
-      <button type="submit">Login</button>
-    </form>
+    <div class="container">
+      <div class="form-container">
+        <form action="/login" method="post">
+          <p class="fsize">ログイン画面</p>
+          <input type="text" placeholder="Username" name="username" />
+          <input type="password" placeholder="Password" name="password" />
+          <button type="submit">ログイン</button>
+        </form>
+      </div>
+    </div>
     {{end}}
   </body>
 </html>
