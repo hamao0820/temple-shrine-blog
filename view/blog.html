@@ -7,20 +7,23 @@
     <!-- prettier-ignore -->
     <script>(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
         ({key: "{{.api_key}}", v: "beta"});</script>
-    <style>
-      #map {
-        height: 300px;
-        width: 300px;
-      }
-    </style>
     <link rel="stylesheet" href="../assets/css/header.css" />
     <link rel="stylesheet" href="../assets/css/blog.css" />
     <script src="../assets/js/blog.js" defer></script>
   </head>
   <body>
-    {{template "header" .}}
-    <h2>{{.blog.name}}</h2>
-    <a href="/">一覧ページに戻る</a>
+    {{template "header" .}} {{if .authorized}}
+    <div>
+      <a href="/blog/{{.blog.id}}/edit" class="edit-button">編集</a>
+    </div>
+    {{end}}
+    <div class="name-container">
+      <h2>{{.blog.name}}</h2>
+    </div>
+    <div class="date-container">
+      <p>作成日時: {{.blog.createdAt}}</p>
+      <p>更新日時: {{.blog.updatedAt}}</p>
+    </div>
     <div class="slide-wrapper">
       <!-- スライド（コンテンツ） -->
       <div id="slide" class="slide">
@@ -41,19 +44,20 @@
         {{end}}
       </ul>
     </div>
-    <div id="map"></div>
-    <p>{{.blog.body}}</p>
-    <p>作成日時: {{.blog.createdAt}}</p>
-    <p>更新日時: {{.blog.updatedAt}}</p>
+    <div class="body-container">
+      <div class="body">{{.blog.body}}</div>
+    </div>
+    <div class="map-container">
+      <div id="map" class="map"></div>
+    </div>
     {{if .authorized}}
-    <div>
-      <a href="/blog/{{.blog.id}}/edit">編集</a>
+    <div class="delete-button-container">
       <form
         action="/blog/{{.blog.id}}/delete"
         method="post"
         onSubmit="return checkDelete()"
       >
-        <button type="submit">削除</button>
+        <button type="submit" class="delete-button">削除</button>
       </form>
     </div>
     {{end}}

@@ -86,3 +86,58 @@ img {
   height: 100%;
   object-fit: contain;
 }
+
+.edit-button {
+  padding: 5px 10px;
+  border: none;
+  border-bottom: 1px solid gray;
+  cursor: pointer;
+  text-decoration: none;
+}
+.name-container {
+  margin: 5px;
+  text-align: center;
+}
+.name-container h2 {
+  font-size: 2rem;
+}
+.date-container {
+  margin: 5px;
+  text-align: center;
+  color: #666;
+  font-size: 0.8rem;
+}
+.body-container {
+  margin: 5px;
+  padding: 5px;
+  display: flex;
+  justify-content: center;
+}
+.body {
+  width: 50%;
+  min-width: 350px;
+  white-space: pre-wrap;
+}
+.map-container {
+  margin: 5px;
+  display: flex;
+  justify-content: center;
+}
+.map {
+  width: 50%;
+  min-width: 350px;
+  height: 300px;
+  border: 1px solid #ccc;
+}
+.delete-button-container {
+  margin: 5px;
+  text-align: center;
+}
+.delete-button {
+  margin: 5px;
+  padding: 5px 10px;
+  border: 1px solid red;
+  border-radius: 5px;
+  color: red;
+  cursor: pointer;
+}
