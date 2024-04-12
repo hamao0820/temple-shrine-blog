@@ -46,6 +46,7 @@ func ShowBlog(c *gin.Context) {
 		"id":        blog.ID,
 		"lat":       blog.Lat,
 		"lng":       blog.Lng,
+		"address":   blog.Address,
 	}
 	c.HTML(http.StatusOK, "blog.html", gin.H{
 		"blog":       showBlog,

@@ -50,6 +50,13 @@
     <div class="map-container">
       <div id="map" class="map"></div>
     </div>
+    <div class="a-container">
+      <a
+        href="https://www.google.com/maps/search/{{.blog.address}}"
+        target="_blank"
+        >googleマップで見る</a
+      >
+    </div>
     {{if .authorized}}
     <div class="delete-button-container">
       <form

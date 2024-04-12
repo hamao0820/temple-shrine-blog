@@ -145,3 +145,7 @@ img {
   color: red;
   cursor: pointer;
 }
+
+.a-container {
+  text-align: center;
+}
