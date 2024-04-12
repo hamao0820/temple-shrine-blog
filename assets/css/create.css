@@ -1,0 +1,39 @@
+#map {
+  height: 300px;
+  width: 100%;
+  margin-top: 10px;
+}
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0;
+}
+.form-container {
+  width: 50%;
+  min-width: 300px;
+  padding: 10px;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+.name-input,
+.image-input,
+.body-input {
+  width: 100%;
+  margin-bottom: 10px;
+}
+.address-form {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+.submit-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}

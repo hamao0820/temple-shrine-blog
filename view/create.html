@@ -9,42 +9,47 @@
     <script>(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
         ({key: "{{.api_key}}", v: "beta"});</script>
 
-    <style>
-      #map {
-        height: 400px;
-        width: 400px;
-      }
-    </style>
+    <link rel="stylesheet" href="../assets/css/create.css" />
   </head>
   <body>
     <h1>登録</h1>
     <a href="/">一覧ページに戻る</a>
-    <form action="/create" method="post" enctype="multipart/form-data">
-      <label for="name">名前</label>
-      <input type="text" name="name" id="name" />
-      <label for="image_data">画像</label>
-      <input
-        type="file"
-        name="image_data"
-        multiple="multiple"
-        accept="image/jpeg"
-        id="image_data"
-      />
-      <label for="body">本文</label>
-      <input type="text" id="body" name="body" />
-      <div id="address-form">
-        <label for="address">住所</label>
-        <input type="text" id="address" name="address" />
-        <label for="lat">lat:</label>
-        <input type="number" id="lat" name="lat" readonly />
-        <label for="lng">lng:</label>
-        <input type="number" id="lng" name="lng" readonly />
+    <div class="container">
+      <div class="form-container">
+        <form action="/create" method="post" enctype="multipart/form-data">
+          <label for="name">名前</label>
+          <input type="text" name="name" id="name" class="name-input" />
+          <label for="image_data">画像</label>
+          <input
+            type="file"
+            name="image_data"
+            multiple="multiple"
+            accept="image/jpeg"
+            id="image_data"
+            class="image-input"
+          />
+          <label for="body">本文</label>
+          <textarea
+            id="body"
+            name="body"
+            class="body-input"
+            rows="6"
+          ></textarea>
+          <label for="pac-input">住所検索:</label>
+          <input type="text" id="pac-input" />
+          <div id="map"></div>
+          <div class="address-form">
+            <label for="address">住所:</label>
+            <input type="text" id="address" name="address" readonly />
+            <label for="lat">lat:</label>
+            <input type="number" id="lat" name="lat" readonly />
+            <label for="lng">lng:</label>
+            <input type="number" id="lng" name="lng" readonly />
+          </div>
+          <button type="submit" class="submit-button">登録</button>
+        </form>
       </div>
-      <button type="submit">登録</button>
-    </form>
-
-    <input type="text" id="pac-input" />
-    <div id="map"></div>
+    </div>
 
     <script>
       const $placeList = document.querySelector(".place-list");
