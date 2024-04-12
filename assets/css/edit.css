@@ -1,0 +1,65 @@
+#map {
+  height: 300px;
+  width: 100%;
+  margin-top: 10px;
+}
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0;
+}
+.form-container {
+  width: 50%;
+  min-width: 300px;
+  padding: 10px;
+  background-color: #ffffff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+.name-input,
+.image-input,
+.body-input {
+  width: 100%;
+  margin-bottom: 10px;
+}
+.address-form {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+.submit-button {
+  width: 100%;
+  padding: 10px;
+  background-color: #007bff;
+  color: #ffffff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.image-list-container {
+  width: 100%;
+}
+.image-list {
+  height: 30%;
+  margin: 20px 0;
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+.image-list-item {
+  width: 100px;
+  height: 100px;
+  margin: 5px 10px 25px 0;
+  position: relative;
+  object-fit: contain;
+  text-align: center;
+}
+.image-list-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.image-list-item input {
+  margin: 0;
+}
