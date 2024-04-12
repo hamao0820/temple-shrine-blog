@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
+	"golang.org/x/crypto/bcrypt"
 )
 
 var adminUsername string
@@ -37,7 +38,8 @@ func init() {
 func Login(c *gin.Context) {
 	username := c.PostForm("username")
 	password := c.PostForm("password")
-	if username != adminUsername || password != adminPassword {
+	err := CompareHashAndPassword(adminPassword, password)
+	if username != adminUsername || err != nil {
 		c.JSON(401, gin.H{"message": "authentication failed"})
 		return
 	}
@@ -108,4 +110,8 @@ func Authorized(c *gin.Context) bool {
 	}
 
 	return true
+}
+
+func CompareHashAndPassword(hash, password string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 }
