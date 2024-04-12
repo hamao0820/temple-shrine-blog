@@ -19,6 +19,7 @@
 }
 .blog-list {
   display: flex;
+  justify-content: space-between;
   flex-wrap: wrap;
   gap: 10px;
 }
@@ -38,4 +39,14 @@
 .created-at {
   margin: 0;
   color: #666;
+}
+
+.paginate {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+.dummy {
+  color: #ccc;
 }

@@ -12,8 +12,33 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const perPage = 6
+
 func Index(c *gin.Context) {
-	blogs := model.GetAll()
+	pageStr := c.DefaultQuery("page", "1")
+	var page int
+	var err error
+	page, err = strconv.Atoi(pageStr)
+	if err != nil {
+		page = 1
+	}
+	limit := perPage + 1
+	offset := (page - 1) * perPage
+	blogs := model.GetRange(limit, offset)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "server error"})
+		return
+	}
+
+	count := len(blogs)
+	sliceNum := perPage
+	if count < sliceNum {
+		sliceNum = count
+	}
+	blogs = blogs[:sliceNum]
+
+	paginate := util.CreatePaginate(page, limit, count)
+
 	var showBlogs []map[string]any
 	for _, b := range blogs {
 		thumbnail := "images/thumbnail.png"
@@ -30,6 +55,7 @@ func Index(c *gin.Context) {
 	}
 	c.HTML(http.StatusOK, "index.html", gin.H{
 		"blogs":      showBlogs,
+		"paginate":   paginate,
 		"authorized": Authorized(c),
 	})
 }

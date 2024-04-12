@@ -53,6 +53,21 @@
             </div>
             {{end}}
           </div>
+          <div class="paginate">
+            {{ if gt .paginate.BeforePage 0 }}
+            <a href="/?page={{ .paginate.BeforePage }}" class="before-page"
+              >前のページ</a
+            >
+            {{else}}
+            <span class="before-page dummy">前のページ</span>
+            {{ end }} {{ if gt .paginate.NextPage 0 }}
+            <a href="/?page={{ .paginate.NextPage }}" class="next-page"
+              >次のページ</a
+            >
+            {{else}}
+            <span class="next-page dummy">次のページ</span>
+            {{ end }}
+          </div>
         </div>
       </div>
     </div>

@@ -57,6 +57,15 @@ func GetOne(id string) (data Blog) {
 	return data
 }
 
+func GetRange(limit, offset int) (datas []Blog) {
+	db := openDB()
+	res := db.Model(&Blog{}).Preload("ImageURLs").Limit(limit).Offset(offset).Order("created_at desc").Find(&datas)
+	if res.Error != nil {
+		return
+	}
+	return datas
+}
+
 func (b *Blog) Create() {
 	db := openDB()
 	r := db.Create(b)
