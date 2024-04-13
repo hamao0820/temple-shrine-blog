@@ -29,7 +29,10 @@
       <div id="slide" class="slide">
         {{range .blog.images}}
         <div>
-          <img src="{{.URL}}" alt="image" />
+          <img
+            src="https://temple-shrine.s3.amazonaws.com/{{.Name}}"
+            alt="image"
+          />
           <!-- <p>slide</p> -->
         </div>
         {{end}}

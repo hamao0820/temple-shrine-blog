@@ -6,7 +6,6 @@ import (
 	_ "image/png"
 	"io"
 	"os"
-	"path/filepath"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -18,11 +17,10 @@ import (
 	"gitlab.com/osaki-lab/iowrapper"
 )
 
-var baseURL string
+const BucketName = "temple-shrine"
 
 func init() {
 	godotenv.Load()
-	baseURL = fmt.Sprintf(`https://%s.s3.amazonaws.com/`, os.Getenv("BUCKET_NAME"))
 }
 
 func SaveImage(src io.Reader) (string, error) {
@@ -62,7 +60,7 @@ func SaveImage(src io.Reader) (string, error) {
 
 	svc := s3.New(s)
 	_, err = svc.PutObject(&s3.PutObjectInput{
-		Bucket: aws.String(os.Getenv("BUCKET_NAME")),
+		Bucket: aws.String(BucketName),
 		Key:    aws.String(fileName),
 		Body:   iowrapper.NewSeeker(&buffer, iowrapper.MaxBufferSize(10*1024*1024)),
 	})
@@ -71,10 +69,10 @@ func SaveImage(src io.Reader) (string, error) {
 		return "", err
 	}
 
-	return filepath.Join(baseURL, fileName), nil
+	return fileName, nil
 }
 
-func DeleteImage(url string) error {
+func DeleteImage(name string) error {
 	credential := credentials.NewStaticCredentials(
 		os.Getenv("AWS_ACCESS_KEY"),
 		os.Getenv("AWS_SECRET_KEY"),
@@ -93,8 +91,8 @@ func DeleteImage(url string) error {
 
 	svc := s3.New(s)
 	_, err = svc.DeleteObject(&s3.DeleteObjectInput{
-		Bucket: aws.String(os.Getenv("BUCKET_NAME")),
-		Key:    aws.String(filepath.Base(url)),
+		Bucket: aws.String(BucketName),
+		Key:    aws.String(name),
 	})
 
 	return err

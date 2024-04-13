@@ -11,24 +11,24 @@ import (
 
 type Blog struct {
 	gorm.Model
-	Name      string
-	Body      string
-	Address   string
-	Lat       float64
-	Lng       float64
-	ImageURLs []ImageURL `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL,foreignkey:OrganizationID;"`
+	Name       string
+	Body       string
+	Address    string
+	Lat        float64
+	Lng        float64
+	ImageNames []ImageName `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL,foreignkey:OrganizationID;"`
 }
 
-type ImageURL struct {
+type ImageName struct {
 	gorm.Model
-	URL    string
+	Name   string
 	BlogID uint
 }
 
 func init() {
 	db := openDB()
 
-	db.AutoMigrate(&Blog{}, &ImageURL{})
+	db.AutoMigrate(&Blog{}, &ImageName{})
 }
 
 func openDB() *gorm.DB {
@@ -47,7 +47,7 @@ func openDB() *gorm.DB {
 
 func GetAll() (datas []Blog) {
 	db := openDB()
-	res := db.Model(&Blog{}).Preload("ImageURLs").Find(&datas).Order("created_at desc")
+	res := db.Model(&Blog{}).Preload("ImageNames").Find(&datas).Order("created_at desc")
 	if res.Error != nil {
 		return
 	}
@@ -56,7 +56,7 @@ func GetAll() (datas []Blog) {
 
 func GetOne(id string) (data Blog) {
 	db := openDB()
-	result := db.Model(&Blog{}).Preload("ImageURLs").First(&data, id)
+	result := db.Model(&Blog{}).Preload("ImageNames").First(&data, id)
 	if result.Error != nil {
 		panic(result.Error)
 	}
@@ -65,7 +65,7 @@ func GetOne(id string) (data Blog) {
 
 func GetRange(limit, offset int) (datas []Blog) {
 	db := openDB()
-	res := db.Model(&Blog{}).Preload("ImageURLs").Limit(limit).Offset(offset).Order("created_at desc").Find(&datas)
+	res := db.Model(&Blog{}).Preload("ImageNames").Limit(limit).Offset(offset).Order("created_at desc").Find(&datas)
 	if res.Error != nil {
 		return
 	}
@@ -82,25 +82,25 @@ func (b *Blog) Create() {
 
 func (b *Blog) Edit() {
 	db := openDB()
-	var urls []ImageURL
-	if r := db.Where("blog_id = ?", b.ID).Find(&urls); r.Error != nil {
+	var names []ImageName
+	if r := db.Where("blog_id = ?", b.ID).Find(&names); r.Error != nil {
 		panic(r.Error)
 	}
 	if r := db.Save(b); r.Error != nil {
 		panic(r.Error)
 	}
-	for i := range urls {
-		url := urls[i]
+	for i := range names {
+		name := names[i]
 		has := false
-		for _, i := range b.ImageURLs {
-			if url.ID == i.ID {
+		for _, i := range b.ImageNames {
+			if name.ID == i.ID {
 				has = true
 				break
 			}
 		}
 		if !has {
-			util.DeleteImage(url.URL)
-			if r := db.Delete(&url); r.Error != nil {
+			util.DeleteImage(name.Name)
+			if r := db.Delete(&name); r.Error != nil {
 				panic(r.Error)
 			}
 		}
@@ -112,13 +112,13 @@ func (b *Blog) Delete() {
 	if r := db.Delete(b); r.Error != nil {
 		panic(r.Error)
 	}
-	for _, i := range b.ImageURLs {
-		err := util.DeleteImage(i.URL)
+	for _, i := range b.ImageNames {
+		err := util.DeleteImage(i.Name)
 		if err != nil {
 			panic(err)
 		}
 	}
-	if r := db.Where("blog_id = ?", b.ID).Delete(&ImageURL{}); r.Error != nil {
+	if r := db.Where("blog_id = ?", b.ID).Delete(&ImageName{}); r.Error != nil {
 		panic(r.Error)
 	}
 }

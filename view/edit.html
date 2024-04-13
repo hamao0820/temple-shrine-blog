@@ -31,14 +31,17 @@
             <div class="image-list">
               {{range .blog.images}}
               <div class="image-list-item">
-                <label for="check-{{.URL}}">
-                  <img src="{{.URL}}" alt="image" />
+                <label for="check-{{.Name}}">
+                  <img
+                    src="https://temple-shrine.s3.amazonaws.com/{{.Name}}"
+                    alt="image"
+                  />
                 </label>
                 <input
                   type="checkbox"
                   name="delete-images[]"
-                  id="check-{{.URL}}"
-                  value="{{.URL}}"
+                  id="check-{{.Name}}"
+                  value="{{.Name}}"
                 />
               </div>
               {{end}}

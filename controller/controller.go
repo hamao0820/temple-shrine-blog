@@ -5,6 +5,7 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 	"temple-shrine-blog/model"
 	"temple-shrine-blog/util"
@@ -13,6 +14,8 @@ import (
 )
 
 const perPage = 6
+
+var baseImageURL = "https://temple-shrine.s3.amazonaws.com/"
 
 func Index(c *gin.Context) {
 	pageStr := c.DefaultQuery("page", "1")
@@ -41,12 +44,12 @@ func Index(c *gin.Context) {
 
 	var showBlogs []map[string]any
 	for _, b := range blogs {
-		thumbnail := "images/thumbnail.png"
-		if len(b.ImageURLs) > 0 {
-			thumbnail = b.ImageURLs[0].URL
+		thumbnail := "thumbnail.png"
+		if len(b.ImageNames) > 0 {
+			thumbnail = b.ImageNames[0].Name
 		}
 		showblog := map[string]any{
-			"thumbnail": thumbnail,
+			"thumbnail": filepath.Join(baseImageURL, thumbnail),
 			"createdAt": b.CreatedAt.Format("2006-01-02 15:04:05"),
 			"name":      b.Name,
 			"id":        b.ID,
@@ -72,7 +75,7 @@ func ShowBlog(c *gin.Context) {
 		"updatedAt": blog.UpdatedAt.Format("2006-01-02 15:04:05"),
 		"name":      blog.Name,
 		"body":      blog.Body,
-		"images":    blog.ImageURLs,
+		"images":    blog.ImageNames,
 		"id":        blog.ID,
 		"lat":       blog.Lat,
 		"lng":       blog.Lng,
@@ -103,7 +106,7 @@ func ShowEdit(c *gin.Context) {
 	showBlog := map[string]any{
 		"name":    blog.Name,
 		"body":    blog.Body,
-		"images":  blog.ImageURLs,
+		"images":  blog.ImageNames,
 		"id":      blog.ID,
 		"address": blog.Address,
 		"lat":     blog.Lat,
@@ -146,13 +149,13 @@ func Create(c *gin.Context) {
 
 	files := form.File["image_data"]
 	for _, file := range files {
-		url, err := saveImage(file, c)
+		name, err := saveImage(file, c)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "cannot save image", "error": err})
 			return
 		}
 
-		blog.ImageURLs = append(blog.ImageURLs, model.ImageURL{URL: url})
+		blog.ImageNames = append(blog.ImageNames, model.ImageName{Name: name})
 	}
 
 	blog.Create()
@@ -163,18 +166,18 @@ func Create(c *gin.Context) {
 func Edit(c *gin.Context) {
 	id := c.Param("id")
 	blog := model.GetOne(id)
-	deleteImages := c.PostFormArray("delete-images[]")
-	imageURLs := []model.ImageURL{}
-	for _, i := range blog.ImageURLs {
+	deleteImageNames := c.PostFormArray("delete-images[]")
+	imageNames := []model.ImageName{}
+	for _, i := range blog.ImageNames {
 		has := true
-		for _, d := range deleteImages {
-			if i.URL == d {
+		for _, n := range deleteImageNames {
+			if i.Name == n {
 				has = false
 				break
 			}
 		}
 		if has {
-			imageURLs = append(imageURLs, i)
+			imageNames = append(imageNames, i)
 		}
 	}
 	form, err := c.MultipartForm()
@@ -184,13 +187,13 @@ func Edit(c *gin.Context) {
 	}
 	files := form.File["image_data"]
 	for _, file := range files {
-		url, err := saveImage(file, c)
+		name, err := saveImage(file, c)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "cannot save image", "error": err})
 			return
 		}
 
-		imageURLs = append(imageURLs, model.ImageURL{URL: url})
+		imageNames = append(imageNames, model.ImageName{Name: name})
 	}
 	blog.Name = c.PostForm("name")
 	blog.Body = c.PostForm("body")
@@ -207,7 +210,7 @@ func Edit(c *gin.Context) {
 		return
 	}
 	blog.Lng = lng
-	blog.ImageURLs = imageURLs
+	blog.ImageNames = imageNames
 	blog.Edit()
 	c.Redirect(http.StatusFound, fmt.Sprintf("/blog/%s", id))
 }
@@ -219,12 +222,12 @@ func saveImage(file *multipart.FileHeader, c *gin.Context) (string, error) {
 	}
 	defer src.Close()
 
-	url, err := util.SaveImage(src)
+	name, err := util.SaveImage(src)
 	if err != nil {
 		return "", err
 	}
 
-	return url, nil
+	return name, nil
 }
 
 func Delete(c *gin.Context) {
