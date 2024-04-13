@@ -22,7 +22,7 @@ var baseURL string
 
 func init() {
 	godotenv.Load()
-	baseURL = fmt.Sprintf("https://%s.s3.amazonaws.com/", os.Getenv("BUCKET_NAME"))
+	baseURL = fmt.Sprintf(`https://%s.s3.amazonaws.com/`, os.Getenv("BUCKET_NAME"))
 }
 
 func SaveImage(src io.Reader) (string, error) {
