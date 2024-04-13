@@ -5,7 +5,6 @@ import (
 	"mime/multipart"
 	"net/http"
 	"os"
-	"path/filepath"
 	"strconv"
 	"temple-shrine-blog/model"
 	"temple-shrine-blog/util"
@@ -49,7 +48,7 @@ func Index(c *gin.Context) {
 			thumbnail = b.ImageNames[0].Name
 		}
 		showblog := map[string]any{
-			"thumbnail": filepath.Join(baseImageURL, thumbnail),
+			"thumbnail": thumbnail,
 			"createdAt": b.CreatedAt.Format("2006-01-02 15:04:05"),
 			"name":      b.Name,
 			"id":        b.ID,
