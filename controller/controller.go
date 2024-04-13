@@ -60,6 +60,10 @@ func Index(c *gin.Context) {
 	})
 }
 
+func Awake(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"message": "hello"})
+}
+
 func ShowBlog(c *gin.Context) {
 	id := c.Param("id")
 	blog := model.GetOne(id)

@@ -13,6 +13,8 @@ func GetRouter() *gin.Engine {
 	r.Static("images", "./images")
 	r.Static("assets", "./assets")
 	r.GET("/", Index)
+	r.GET("/awake", Awake)
+	r.POST("/awake", Awake)
 	r.GET("/blog/:id", ShowBlog)
 	r.GET("/login", ShowLogin)
 	r.POST("/login", Login)
