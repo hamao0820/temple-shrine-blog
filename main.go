@@ -1,8 +1,18 @@
 package main
 
-import "temple-shrine-blog/controller"
+import (
+	"log"
+	"os"
+	"temple-shrine-blog/controller"
+)
 
 func main() {
 	r := controller.GetRouter()
-	r.Run(":8080")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	if err := r.Run(":" + port); err != nil {
+		log.Panicf("error: %s", err)
+	}
 }
