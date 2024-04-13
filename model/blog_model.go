@@ -1,13 +1,13 @@
 package model
 
 import (
+	"fmt"
+	"os"
 	"temple-shrine-blog/util"
 
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
-
-const DBName = "test.db"
 
 type Blog struct {
 	gorm.Model
@@ -32,7 +32,13 @@ func init() {
 }
 
 func openDB() *gorm.DB {
-	db, err := gorm.Open("sqlite3", DBName)
+	username := os.Getenv("DB_USERNAME")
+	password := os.Getenv("DB_PASSWORD")
+	host := os.Getenv("DB_HOST")
+	port := os.Getenv("DB_PORT")
+	userName := os.Getenv("DB_NAME")
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local", username, password, host, port, userName)
+	db, err := gorm.Open("mysql", dsn)
 	if err != nil {
 		panic("failed to connect database")
 	}
