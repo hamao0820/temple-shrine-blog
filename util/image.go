@@ -21,10 +21,7 @@ import (
 var baseURL string
 
 func init() {
-	err := godotenv.Load()
-	if err != nil {
-		panic(err)
-	}
+	godotenv.Load()
 	baseURL = fmt.Sprintf("https://%s.s3.amazonaws.com/", os.Getenv("BUCKET_NAME"))
 }
 
